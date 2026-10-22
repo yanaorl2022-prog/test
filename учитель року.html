@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Інтерактивне тестування для вчителя</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/comfortaa@5.0.5/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #2d3748;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  padding: 30px 20px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-family: 'Comfortaa', cursive;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.header p {
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Start screen */
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.category-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  border: none;
+  font-family: inherit;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+.category-card.all {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  grid-column: 1 / -1;
+}
+
+.category-card .icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.category-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  font-family: 'Comfortaa', cursive;
+}
+
+.category-card p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Progress */
+.progress-container {
+  margin-bottom: 30px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #718096;
+  font-weight: 500;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #f093fb);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* Question */
+.question-number {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.question-text {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.option:hover:not(:disabled) {
+  background: #edf2f7;
+  border-color: #667eea;
+  transform: translateX(5px);
+}
+
+.option .letter {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #cbd5e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #667eea;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.option.correct {
+  background: #c6f6d5;
+  border-color: #38a169;
+  color: #22543d;
+}
+
+.option.correct .letter {
+  background: #38a169;
+  color: white;
+  border-color: #38a169;
+}
+
+.option.wrong {
+  background: #fed7d7;
+  border-color: #e53e3e;
+  color: #742a2a;
+}
+
+.option.wrong .letter {
+  background: #e53e3e;
+  color: white;
+  border-color: #e53e3e;
+}
+
+.option:disabled {
+  cursor: not-allowed;
+}
+
+/* Explanation */
+.explanation {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ebf8ff, #e6fffa);
+  border-left: 4px solid #38b2ac;
+  animation: slideIn 0.5s ease;
+}
+
+.explanation h4 {
+  color: #234e52;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.explanation p {
+  color: #2c7a7b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  margin-left: auto;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Results */
+.results {
+  text-align: center;
+}
+
+.score-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Comfortaa', cursive;
+  position: relative;
+}
+
+.score-circle.excellent { background: linear-gradient(135deg, #38a169, #48bb78); }
+.score-circle.good { background: linear-gradient(135deg, #4299e1, #63b3ed); }
+.score-circle.average { background: linear-gradient(135deg, #ed8936, #f6ad55); }
+.score-circle.poor { background: linear-gradient(135deg, #e53e3e, #fc8181); }
+
+.score-number {
+  font-size: 3.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+.result-title {
+  font-family: 'Comfortaa', cursive;
+  font-size: 1.8rem;
+  margin: 20px 0 10px;
+  color: #2d3748;
+}
+
+.result-message {
+  color: #718096;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.stat-box {
+  background: #f7fafc;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #667eea;
+  font-family: 'Comfortaa', cursive;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 5px;
+}
+
+.mistakes-list {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.mistake-item {
+  background: #fff5f5;
+  border-left: 3px solid #e53e3e;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+.mistake-item .q {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.mistake-item .your {
+  color: #c53030;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.mistake-item .correct-ans {
+  color: #22543d;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.mistake-item .exp {
+  color: #4a5568;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.hidden { display: none; }
+
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.8rem; }
+  .card { padding: 25px 20px; }
+  .question-text { font-size: 1.1rem; }
+  .stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📚 Інтерактивне тестування</h1>
+    <p>Педагогічна майстерність • Психологія • Дидактика</p>
+  </div>
+
+  <div class="card" id="mainCard">
+    <!-- Start screen -->
+    <div id="startScreen">
+      <h2 style="font-family: 'Comfortaa', cursive; color: #2d3748; margin-bottom: 10px;">Оберіть категорію тесту</h2>
+      <p style="color: #718096;">Після кожної відповіді ви отримаєте пояснення</p>
+      <div class="categories">
+        <button class="category-card" onclick="startTest('pedagogy')">
+          <div class="icon">🎓</div>
+          <h3>Педагогічна майстерність</h3>
+          <p>40 запитань</p>
+        </button>
+        <button class="category-card" onclick="startTest('didactics')">
+          <div class="icon">📖</div>
+          <h3>Педагогіка та дидактика</h3>
+          <p>5 запитань</p>
+        </button>
+        <button class="category-card" onclick="startTest('psychology')">
+          <div class="icon">🧠</div>
+          <h3>Психологія</h3>
+          <p>5 запитань</p>
+        </button>
+        <button class="category-card all" onclick="startTest('all')">
+          <div class="icon">✨</div>
+          <h3>Пройти всі тести</h3>
+          <p>50 запитань — повний комплекс</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quiz screen -->
+    <div id="quizScreen" class="hidden">
+      <div class="progress-container">
+        <div class="progress-info">
+          <span id="progressText">Питання 1 з 40</span>
+          <span id="scoreText">Бали: 0</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="question-number" id="questionNumber">Питання 1</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="explanation hidden" id="explanation">
+        <h4>💡 Пояснення</h4>
+        <p id="explanationText"></p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exitTest()">🚪 Вийти</button>
+        <button class="btn btn-primary hidden" id="nextBtn" onclick="nextQuestion()">Далі →</button>
+      </div>
+    </div>
+
+    <!-- Results screen -->
+    <div id="resultsScreen" class="hidden">
+      <div class="results">
+        <div class="score-circle" id="scoreCircle">
+          <div class="score-number" id="finalScore">0%</div>
+          <div class="score-label" id="scoreFraction">0/0</div>
+        </div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <p class="result-message" id="resultMessage"></p>
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-value" id="statCorrect">0</div>
+            <div class="stat-label">Правильних</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statWrong">0</div>
+            <div class="stat-label">Помилок</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">Всього</div>
+          </div>
+        </div>
+        <div id="mistakesContainer"></div>
+        <div class="btn-row" style="justify-content: center;">
+          <button class="btn btn-secondary" onclick="restart()">🔄 Спробувати знову</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== ПЕДАГОГІЧНА МАЙСТЕРНІСТЬ (40) ======
+const pedagogy = [
+  {
+    q: "Педмайстерність – це…",
+    options: ["наука про учня", "наука про виховання та навчання школяра", "наука про професійну компетентну діяльність учителя", "наука про навчання як спеціально організовану діяльність"],
+    correct: 2,
+    exp: "Педагогічна майстерність — це комплекс властивостей особистості, що забезпечує високий рівень самоорганізації професійної діяльності на рефлексивній основі. Це, по суті, наука про компетентну діяльність учителя."
+  },
+  {
+    q: "Професійна компетентність вчителя початкової школи:",
+    options: ["знання основ управління навчальним закладом", "вирішення конфліктних ситуацій", "знання основ педагогіки і психології дітей шкільного віку", "матеріально-технічна база шкільного навчального закладу"],
+    correct: 2,
+    exp: "Професійна компетентність вчителя початкових класів передусім передбачає знання вікової педагогіки та психології дітей шкільного віку — це фундамент його роботи."
+  },
+  {
+    q: "Цілі, об'єкт, суб'єкт, засоби і результат є компонентами:",
+    options: ["педагогічної творчості", "педагогічної діяльності", "педагогічної майстерності", "процесу самовдосконалення"],
+    correct: 1,
+    exp: "Будь-яка діяльність, у тому числі педагогічна, має структурні компоненти: суб'єкт (той, хто діє), об'єкт (на кого спрямована), цілі, засоби та результат."
+  },
+  {
+    q: "Суб'єктом педагогічної діяльності є:",
+    options: ["вчитель", "учень", "методи навчання і виховання"],
+    correct: 0,
+    exp: "Суб'єкт — це той, хто здійснює діяльність. У педагогічній діяльності це вчитель, а учень виступає об'єктом (або співсуб'єктом) діяльності."
+  },
+  {
+    q: "Самовиховання вчителя – це:",
+    options: ["організація позакласної діяльності учнів", "формування людиною своєї особистості відповідно до свідомо поставленої мети", "участь у навчально-виховній діяльності", "організація роботи з батьками"],
+    correct: 1,
+    exp: "Самовиховання — це свідомо організована робота людини над формуванням власних якостей, цінностей і навичок відповідно до поставлених ідеалів."
+  },
+  {
+    q: "Психологічна стійкість у професійній діяльності:",
+    options: ["позитивне емоційне ставлення до себе, дітей, праці", "негативні емоції", "мінорний тон", "емоційні переживання"],
+    correct: 0,
+    exp: "Психологічна стійкість — це здатність зберігати позитивний емоційний фон, оптимізм і конструктивне ставлення до себе, учнів та професійної діяльності навіть у складних ситуаціях."
+  },
+  {
+    q: "Якості, які дають змогу вчителю здійснювати свою професійну діяльність:",
+    options: ["альтруїзм", "авторитарність", "впевненість у собі, відсутність страху перед дітьми"],
+    correct: 2,
+    exp: "Впевненість у собі та відсутність страху перед дітьми — ключові якості, що дають учителю можливість ефективно вести урок і встановлювати продуктивний контакт з учнями."
+  },
+  {
+    q: "Що визначає специфіку професійної діяльності вчителя початкової школи:",
+    options: ["об'єкт", "суб'єкт", "засоби", "результат"],
+    correct: 0,
+    exp: "Саме об'єкт діяльності — дитина молодшого шкільного віку з її особливостями розвитку — визначає специфіку роботи вчителя початкових класів."
+  },
+  {
+    q: "Компоненти діяльності вчителя початкової школи:",
+    options: ["зовнішній вигляд", "делікатність", "особистісний підхід", "комунікативність"],
+    correct: 3,
+    exp: "Комунікативність — один із ключових компонентів діяльності вчителя: вміння будувати спілкування з учнями, батьками та колегами є професійно необхідним."
+  },
+  {
+    q: "Який компонент педагогічної майстерності визначається мотивами, потребами, ідеалами, схильностями, ціннісними орієнтаціями:",
+    options: ["педагогічні знання", "педагогічні здібності", "гуманістична спрямованість", "педагогічні вміння"],
+    correct: 2,
+    exp: "Гуманістична спрямованість особистості вчителя формується саме з мотивів, потреб, ідеалів і ціннісних орієнтацій — це її внутрішнє стрижневе ядро."
+  },
+  {
+    q: "Яку роль відіграє дикція в діяльності вчителя початкової школи?",
+    options: ["організовує навчальну діяльність школярів", "організовує позакласну діяльність учнів", "служить прикладом мовлення для дітей", "створює конфліктні ситуації у спілкуванні"],
+    correct: 2,
+    exp: "Чітка, виразна дикція вчителя є зразком для учнів, які саме в початковій школі активно засвоюють норми літературної мови."
+  },
+  {
+    q: "Виділіть зайве. Основою структурування програми «Літературне читання» 2 клас є змістові лінії Державного стандарту:",
+    options: ["Коло читання", "Формування й розвиток навички читання", "Літературознавча пропедевтика", "Робота з першоджерелами"],
+    correct: 3,
+    exp: "«Робота з першоджерелами» не входить до змістових ліній програми «Літературне читання» 2 класу — це зайвий елемент серед наведених."
+  },
+  {
+    q: "Навчання – це…",
+    options: ["процес і результат сприймання індивідуального досвіду", "активність суб'єкта діяльності", "цілеспрямована послідовна передача досвіду іншій людині в спеціально організованих умовах"],
+    correct: 2,
+    exp: "Навчання — це цілеспрямований процес передачі соціального досвіду від одного покоління до іншого в спеціально організованих умовах (школа, університет тощо)."
+  },
+  {
+    q: "Основною метою оцінки вчителем знань учнів є:",
+    options: ["інформувати учнів про їх успіх або неуспіх", "стимулювати і спрямовувати навчально-пізнавальну діяльність школярів", "втратити думку вчителя про учня", "інформувати батьків про діяльність дитини"],
+    correct: 1,
+    exp: "Головна мета оцінювання — не просто констатувати результат, а стимулювати й спрямовувати навчально-пізнавальну діяльність учнів, мотивувати їх до подальшого розвитку."
+  },
+  {
+    q: "Педагогічний досвід – це…",
+    options: ["практична діяльність вчителя початкової школи і її результат", "загальна ознака педагогічної діяльності", "вид діяльності вчителя початкової школи", "накопичення професійних навичок"],
+    correct: 0,
+    exp: "Педагогічний досвід — це сукупність практичної діяльності вчителя та її результатів, набутих у процесі професійної роботи."
+  },
+  {
+    q: "Реалізація завдань предмету «Я у світі» 3-4 клас сприяє формуванню в молодших школярів ключових компетентностей:",
+    options: ["соціальної", "громадянської", "соціальнокультурної"],
+    correct: [0, 1, 2],
+    exp: "Предмет «Я у світі» інтегративний, тому він формує одразу всі три компетентності: соціальну, громадянську та соціальнокультурну — це його ключова особливість."
+  },
+  {
+    q: "Передовий педагогічний досвід – це:",
+    options: ["накопичення передових ідей в системі роботи вчителя", "педагогічні ідеї у найефективнішому використанні форм, методів, прийомів і засобів навчання та виховання", "технологія роботи вчителя початкової школи", "науково-методичні положення, які забезпечують якість процесу засвоєння досвіду"],
+    correct: 1,
+    exp: "Передовий педагогічний досвід — це втілення педагогічних ідей у найефективніших формах, методах і прийомах, що дають високі результати навчання та виховання."
+  },
+  {
+    q: "Методи вивчення передового досвіду:",
+    options: ["спостереження за роботою вчителя", "перегляд фрагментів фільмів", "перегляд методичної літератури", "дослідження з певних тем"],
+    correct: 0,
+    exp: "Основним методом вивчення передового досвіду є безпосереднє спостереження за роботою вчителя — це дає змогу побачити прийоми в дії."
+  },
+  {
+    q: "Основні категорії педагогіки:",
+    options: ["освіта", "виховний процес у початковій школі", "гурткова робота", "культура"],
+    correct: 0,
+    exp: "Освіта — одна з базових категорій педагогіки поряд із вихованням і навчанням. Вона охоплює цілісний процес формування особистості."
+  },
+  {
+    q: "Який компонент педагогічної майстерності є основою цього комплексу:",
+    options: ["педагогічні знання", "педагогічні здібності", "гуманістична спрямованість", "педагогічні вміння"],
+    correct: 0,
+    exp: "Педагогічні знання є фундаментом, на якому будуються всі інші компоненти майстерності: вміння, здібності та спрямованість."
+  },
+  {
+    q: "Стилі педагогічного спілкування:",
+    options: ["демократичний", "педагогічний", "особовий", "психолого-педагогічний"],
+    correct: 0,
+    exp: "Демократичний стиль спілкування — один з основних (разом з авторитарним і ліберальним). Він передбачає партнерські стосунки з учнями."
+  },
+  {
+    q: "Педагогічні умови, які сприяють ефективності спілкування:",
+    options: ["володіння психолого-педагогічними якостями та уміннями", "організаторські вміння", "дидактичні прийоми", "методи навчання"],
+    correct: 0,
+    exp: "Саме володіння психолого-педагогічними якостями та уміннями створює умови для продуктивного спілкування вчителя з учнями."
+  },
+  {
+    q: "Який компонент педагогічної майстерності забезпечує швидкість оволодіння майстерністю:",
+    options: ["педагогічні знання", "педагогічні здібності", "гуманістична спрямованість", "педагогічні вміння"],
+    correct: 1,
+    exp: "Педагогічні здібності — це індивідуально-психологічні особливості, що визначають швидкість і глибину оволодіння професійною майстерністю."
+  },
+  {
+    q: "Основні принципи побудови програми:",
+    options: ["наступність", "лінійність", "інтегративність"],
+    correct: [0, 1, 2],
+    exp: "Сучасні навчальні програми будуються на принципах наступності, лінійності та інтегративності — усі три принципи взаємодоповнюють один одного."
+  },
+  {
+    q: "Норми часової, просторової орієнтації партнерів по спілкуванню вивчає:",
+    options: ["жестика", "кінесика", "праксеміка", "пантоміміка"],
+    correct: 2,
+    exp: "Праксеміка (проксеміка) — це розділ невербальної комунікації, що вивчає просторові та часові норми спілкування між людьми."
+  },
+  {
+    q: "Наука навчання дорослих у системі неперервної освіти називається:",
+    options: ["андрогогіка", "спелеологія", "теологія"],
+    correct: 0,
+    exp: "Андрагогіка — це наука про навчання дорослих, на відміну від педагогіки, яка орієнтована на дітей. Має свою специфіку методів і підходів."
+  },
+  {
+    q: "Якому методу психофізичної саморегуляції відповідає визначення: «Психотерапевтичний метод, заснований на самонавіюванні й саморегуляції…»:",
+    options: ["самонавіювання", "аутотренінг", "бібліотерапія", "імітаційна гра"],
+    correct: 1,
+    exp: "Аутотренінг — це метод психологічної саморегуляції, розроблений Й. Шульцем, який поєднує самонавіювання з м'язовим розслабленням."
+  },
+  {
+    q: "Дихання, голос, дикція і темпоритм — це:",
+    options: ["комунікативні якості мовлення", "складові техніки мовлення"],
+    correct: 1,
+    exp: "Дихання, голос, дикція і темпоритм — це базові складові техніки мовлення вчителя, які забезпечують фізіологічну основу його голосу."
+  },
+  {
+    q: "Що не є характеристикою голосу:",
+    options: ["сила", "польотність", "темпоритм", "мелодика", "діапазон"],
+    correct: 2,
+    exp: "Темпоритм — це окрема складова техніки мовлення, а не характеристика голосу як такого. До характеристик голосу належать сила, польотність, мелодика, діапазон."
+  },
+  {
+    q: "Правильність, виразність, ясність, точність, стислість, доцільність, логічність — це:",
+    options: ["комунікативні якості мовлення", "складові техніки мовлення"],
+    correct: 0,
+    exp: "Це комунікативні якості мовлення — вони визначають, наскільки ефективно мовець передає думку слухачам."
+  },
+  {
+    q: "Аналітичні, проективні, конструктивні, організаційні, комунікативні вміння утворюють групу умінь:",
+    options: ["психолого-педагогічних", "фахово-методичних", "спеціальних", "творчих"],
+    correct: 0,
+    exp: "Ці вміння належать до психолого-педагогічної групи — вони пов'язані з розумінням учня, плануванням і організацією навчально-виховного процесу."
+  },
+  {
+    q: "Специфічні вміння, пов'язані з навчанням чи організацією конкретної діяльності, — це:",
+    options: ["психолого-педагогічні", "фахово-методичні", "спеціальні", "творчі"],
+    correct: 1,
+    exp: "Фахово-методичні вміння — це вміння, пов'язані з методикою викладання конкретного предмета та організацією навчальної діяльності."
+  },
+  {
+    q: "Уміння малювати, співати, ритмічно рухатися під музику, писати вірші — це уміння:",
+    options: ["психолого-педагогічні", "фахово-методичні", "спеціальні", "творчі"],
+    correct: 2,
+    exp: "Це спеціальні вміння — вони пов'язані з конкретними видами мистецької або іншої діяльності і можуть використовуватися вчителем для збагачення уроку."
+  },
+  {
+    q: "Яка з названих функцій не є функцією педагогічного спілкування:",
+    options: ["пізнавальна", "інформаційна", "самоствердження", "самореалізації", "співпереживання"],
+    correct: 3,
+    exp: "Функція самореалізації не виділяється серед основних функцій педагогічного спілкування. Основними є пізнавальна, інформаційна, самоствердження, співпереживання тощо."
+  },
+  {
+    q: "Якому поняттю відповідає визначення: «Комплекс властивостей особистості, який забезпечує високий рівень самоорганізації професійної педагогічної діяльності на рефлексивній основі»:",
+    options: ["педагогічна діяльність", "педагогічна майстерність", "педагогічна техніка", "педагогічна творчість"],
+    correct: 1,
+    exp: "Це класичне визначення педагогічної майстерності — вона поєднує особистісні властивості, професійні знання та вміння на основі рефлексії."
+  },
+  {
+    q: "Що із названого нижче не є напрямком самовдосконалення:",
+    options: ["розвиток педагогічної майстерності", "розвиток педагогічної техніки", "підвищення компетентності", "актуалізація власного творчого потенціалу"],
+    correct: 1,
+    exp: "Розвиток педагогічної техніки не виділяється як окремий напрямок самовдосконалення — він є частиною розвитку педагогічної майстерності в цілому."
+  },
+  {
+    q: "Слово педагога як могутній засіб впливу на вихованців лежить в основі методів:",
+    options: ["організації діяльності, спілкування та формування позитивного досвіду", "стимулювання діяльності і поведінки", "формування свідомості особистості", "самовиховання"],
+    correct: 2,
+    exp: "Слово педагога — це основа методів формування свідомості особистості (переконання, бесіда, лекція, приклад тощо)."
+  },
+  {
+    q: "Метод, що забезпечує корекцію поведінки учнів, а саме стимулювання хороших вчинків, шляхом розширення їх прав і обов'язків, — це:",
+    options: ["змагання", "заохочення", "покарання"],
+    correct: 1,
+    exp: "Заохочення — це метод стимулювання позитивної поведінки через похвалу, подяку, розширення прав та обов'язків, нагороди тощо."
+  },
+  {
+    q: "Професійна функція, що здійснює регулювання в системі діяльності педагога, називається:",
+    options: ["інформаційна", "нормативна", "рефлексії", "діагностико-прогностична"],
+    correct: 1,
+    exp: "Нормативна функція полягає у визначенні норм, правил, стандартів діяльності — тобто вона регулює поведінку та діяльність педагога й учнів."
+  },
+  {
+    q: "Зміни до програм початкової школи обговорювалися на Інтернет-платформі:",
+    options: ["Всеосвіта", "ed-era"],
+    correct: 1,
+    exp: "Платформа EdEra активно використовувалася для обговорення змін до програм початкової школи та проведення відповідних онлайн-курсів для вчителів."
+  }
+];
+
+// ====== ПЕДАГОГІКА ТА ДИДАКТИКА (5) ======
+const didactics = [
+  {
+    q: "Знайдіть відповідність між назвами педагогічних наук та їх змістом:\n1. Загальна педагогіка\n2. Вікова педагогіка\n3. Спеціальна педагогіка\n4. Галузеві педагогіки",
+    options: [
+      "1-А, 2-Б, 3-В, 4-Г",
+      "1-В, 2-А, 3-Г, 4-Б",
+      "1-Б, 2-В, 3-А, 4-Г",
+      "1-Г, 2-А, 3-Б, 4-В"
+    ],
+    correct: 1,
+    exp: "Загальна педагогіка (В) — вивчає загальні проблеми; вікова (А) — закони виховання різних вікових груп; спеціальна (Г) — діти з вадами; галузеві (Б) — педагогіка вищої школи тощо."
+  },
+  {
+    q: "У наведеному списку виберіть прізвища відомих педагогів:",
+    options: [
+      "К.Д. Ушинський, М. Монтессорі, Я. Корчак, Ш.А. Амонашвілі",
+      "К.Д. Ушинський, М. Ватутін, І. Мазепа",
+      "М. Монтессорі, Ф. Коппола, Дж. Верді",
+      "Усі перелічені"
+    ],
+    correct: 0,
+    exp: "Ушинський, Монтессорі, Корчак і Амонашвілі — видатні педагоги. Ватутін і Мазепа — військові/політичні діячі, Верді — композитор, Коппола — режисер."
+  },
+  {
+    q: "Італійський педагог, автор популярної методики виховання дітей у дошкільних закладах та початковій школі, що ґрунтується на повному прийнятті індивідуальності дитини:",
+    options: ["М. Монтессорі", "Ф. Коппола", "Дж. Верді", "М. Мастроянні"],
+    correct: 0,
+    exp: "Марія Монтессорі — італійський педагог, автор методики, що базується на свободі дитини в підготовленому середовищі та повазі до її індивідуальності."
+  },
+  {
+    q: "Дидактика вивчає:",
+    options: [
+      "вікові психологічні особливості учнів",
+      "входження особистості в соціальне середовище",
+      "закономірності засвоєння знань, умінь і навичок, формування переконань, визначає обсяг і структуру змісту освіти",
+      "типи державного устрою",
+      "формування почуття патріотизму"
+    ],
+    correct: 2,
+    exp: "Дидактика — це розділ педагогіки, що вивчає закономірності процесу навчання, його зміст, методи, форми та організацію."
+  },
+  {
+    q: "Процес, у ході якого готові знання передаються учням, із подальшим процесом закріплення, узагальнення, систематизації та контролю – це:",
+    options: [
+      "сугестивне навчання",
+      "проблемне навчання",
+      "репродуктивне навчання",
+      "практичне навчання"
+    ],
+    correct: 2,
+    exp: "Репродуктивне навчання — це передача готових знань і їх відтворення учнями. Воно протиставляється проблемному, де учні самі здобувають знання."
+  }
+];
+
+// ====== ПСИХОЛОГІЯ (5) ======
+const psychology = [
+  {
+    q: "Предметом психології є:",
+    options: [
+      "психічна реальність як така",
+      "розвиток емоцій і почуттів",
+      "розвиток і прояви психічних явищ"
+    ],
+    correct: 2,
+    exp: "Психологія вивчає розвиток і прояви психічних явищ — це широке визначення, що охоплює процеси, стани та властивості психіки."
+  },
+  {
+    q: "Який тип темпераменту притаманний хлопчику: «Сашко енергійний, життєрадісний, товариський, працездатний. Швидко відгукується на події, прагне до нових вражень, легко переживає невдачі. Живий, рухливий, з виразною мімікою»:",
+    options: ["флегматик", "сангвінік", "холерик"],
+    correct: 1,
+    exp: "Опис відповідає сангвініку: життєрадісність, товариськість, швидка реакція, легке переживання невдач, виразна міміка — класичні ознаки цього темпераменту."
+  },
+  {
+    q: "Оберіть характеристики, що відносяться до креативності:",
+    options: [
+      "продуктивність, оригінальність, гнучкість",
+      "міцність, системність, порядність",
+      "усі перелічені",
+      "жодна з перелічених"
+    ],
+    correct: 0,
+    exp: "Креативність характеризується продуктивністю (здатністю створювати нове), оригінальністю (неординарністю) та гнучкістю (здатністю змінювати підхід)."
+  },
+  {
+    q: "Для дослідження інтелекту використовують:",
+    options: [
+      "проективний тест «Намалюй людину»",
+      "тест Векслера",
+      "опитувальник Шмішека"
+    ],
+    correct: 1,
+    exp: "Тест Векслера (WAIS, WISC) — це один із найвідоміших інтелектуальних тестів, що визначає рівень IQ. «Намалюй людину» — проективний, Шмішек — для акцентуацій характеру."
+  },
+  {
+    q: "Встановіть відповідність між описом поведінки та її назвою:\n1. Заподіяння шкоди собі\n2. Поведінка, орієнтована на зовнішні авторитети\n3. Стійка поведінка, що відхиляється від норм\n4. Залежність від речовини або активності",
+    options: [
+      "1-Б, 2-Г, 3-А, 4-В",
+      "1-А, 2-Б, 3-В, 4-Г",
+      "1-В, 2-Г, 3-Б, 4-А",
+      "1-Г, 2-А, 3-Б, 4-В"
+    ],
+    correct: 0,
+    exp: "1-Б (аутодеструктивна — шкода собі); 2-Г (конформна — орієнтація на авторитети); 3-А (девіантна — відхилення від норм); 4-В (адиктивна — залежність)."
+  }
+];
+
+let currentTest = [];
+let currentIndex = 0;
+let score = 0;
+let mistakes = [];
+let answered = false;
+
+function startTest(type) {
+  if (type === 'pedagogy') currentTest = [...pedagogy];
+  else if (type === 'didactics') currentTest = [...didactics];
+  else if (type === 'psychology') currentTest = [...psychology];
+  else currentTest = [...pedagogy, ...didactics, ...psychology];
+
+  currentIndex = 0;
+  score = 0;
+  mistakes = [];
+  answered = false;
+
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  const q = currentTest[currentIndex];
+  document.getElementById('questionNumber').textContent = `Питання ${currentIndex + 1}`;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('progressText').textContent = `Питання ${currentIndex + 1} з ${currentTest.length}`;
+  document.getElementById('scoreText').textContent = `Бали: ${score}`;
+  document.getElementById('progressFill').style.width = ((currentIndex) / currentTest.length * 100) + '%';
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectOption(i);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('explanation').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+
+  const q = currentTest[currentIndex];
+  const buttons = document.querySelectorAll('.option');
+  buttons.forEach(b => b.disabled = true);
+
+  const isCorrect = Array.isArray(q.correct) ? q.correct.includes(idx) : q.correct === idx;
+
+  if (isCorrect) {
+    buttons[idx].classList.add('correct');
+    score++;
+  } else {
+    buttons[idx].classList.add('wrong');
+    // Show correct answer(s)
+    if (Array.isArray(q.correct)) {
+      q.correct.forEach(c => buttons[c].classList.add('correct'));
+    } else {
+      buttons[q.correct].classList.add('correct');
+    }
+    mistakes.push({
+      question: q.q,
+      yourAnswer: q.options[idx],
+      correctAnswer: Array.isArray(q.correct) ? q.correct.map(c => q.options[c]).join('; ') : q.options[q.correct],
+      explanation: q.exp
+    });
+  }
+
+  document.getElementById('explanationText').textContent = q.exp;
+  document.getElementById('explanation').classList.remove('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').textContent = (currentIndex === currentTest.length - 1) ? 'Завершити 🏁' : 'Далі →';
+  document.getElementById('scoreText').textContent = `Бали: ${score}`;
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= currentTest.length) {
+    showResults();
+  } else {
+    showQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('resultsScreen').classList.remove('hidden');
+
+  const percent = Math.round((score / currentTest.length) * 100);
+  document.getElementById('finalScore').textContent = percent + '%';
+  document.getElementById('scoreFraction').textContent = `${score} з ${currentTest.length}`;
+  document.getElementById('statCorrect').textContent = score;
+  document.getElementById('statWrong').textContent = currentTest.length - score;
+  document.getElementById('statTotal').textContent = currentTest.length;
+
+  const circle = document.getElementById('scoreCircle');
+  circle.classList.remove('excellent', 'good', 'average', 'poor');
+
+  let title = '', message = '';
+  if (percent >= 90) {
+    circle.classList.add('excellent');
+    title = '🏆 Відмінний результат!';
+    message = 'Ви чудово знаєте матеріал. Ваш рівень педагогічної майстерності на висоті!';
+  } else if (percent >= 70) {
+    circle.classList.add('good');
+    title = '👍 Хороший результат!';
+    message = 'Ви маєте міцні знання, але є над чим попрацювати. Перегляньте пояснення до помилок.';
+  } else if (percent >= 50) {
+    circle.classList.add('average');
+    title = '📚 Задовільний результат';
+    message = 'Рекомендуємо повторити теоретичний матеріал та звернути увагу на пояснення.';
+  } else {
+    circle.classList.add('poor');
+    title = '💪 Потрібно більше практики';
+    message = 'Не засмучуйтесь! Кожна помилка — це можливість навчитися. Перегляньте пояснення та спробуйте ще раз.';
+  }
+
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMessage').textContent = message;
+
+  const mistakesContainer = document.getElementById('mistakesContainer');
+  mistakesContainer.innerHTML = '';
+  if (mistakes.length > 0) {
+    const h = document.createElement('h3');
+    h.style.marginBottom = '15px';
+    h.style.color = '#2d3748';
+    h.style.fontFamily = "'Comfortaa', cursive";
+    h.textContent = '📝 Робота над помилками';
+    mistakesContainer.appendChild(h);
+
+    const list = document.createElement('div');
+    list.className = 'mistakes-list';
+    mistakes.forEach((m, i) => {
+      const item = document.createElement('div');
+      item.className = 'mistake-item';
+      item.innerHTML = `
+        <div class="q">${i + 1}. ${m.question}</div>
+        <div class="your">❌ Ваша відповідь: ${m.yourAnswer}</div>
+        <div class="correct-ans">✅ Правильна відповідь: ${m.correctAnswer}</div>
+        <div class="exp">💡 ${m.explanation}</div>
+      `;
+      list.appendChild(item);
+    });
+    mistakesContainer.appendChild(list);
+  }
+}
+
+function exitTest() {
+  if (confirm('Ви впевнені, що хочете вийти? Прогрес буде втрачено.')) {
+    restart();
+  }
+}
+
+function restart() {
+  document.getElementById('startScreen').classList.remove('hidden');
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('resultsScreen').classList.add('hidden');
+}
+</script>
+</body>
+</html>
